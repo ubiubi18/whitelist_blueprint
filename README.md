@@ -1,7 +1,7 @@
 # whitelist_blueprint
 
 **Purpose:**  \
-This Python script is a prototype for reproducibly generating an Idena identity whitelist at the end of each validation epoch.  \
+This Python script is a prototype for reproducibly generating an Idena identity whitelist at the session day of each validation epoch.  \
 The goal is to automate and document the filtering process for on-chain group access, reward distribution, and similar use cases—ensuring full transparency and reproducibility.
 
 ## What does it do?
