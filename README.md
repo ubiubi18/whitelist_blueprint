@@ -5,7 +5,10 @@ This Python script is a prototype for reproducibly generating an Idena identity 
 The goal is to automate and document the filtering process for on-chain group access, reward distribution, and similar use cases—ensuring full transparency and reproducibility.
 
 ## What does it do?
-
+ - Fetches all blocks from the last short session to extract all involved identities with tx in shortsession to allAddresses.txt
+ - Saves the current discriminationStakeThreshold.txt
+ - Filters out against allAdresses.txt: shitflippers, Humans below min stake, and Newbies/Verifieds below 10k IDNA
+ - Outputs a idena_strict_whitelist.jsonl (should be 249 addresses for epoch 164 for example)
 
 ## Installation
 
