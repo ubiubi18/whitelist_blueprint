@@ -6,21 +6,6 @@ The goal is to automate and document the filtering process for on-chain group ac
 
 ## What does it do?
 
-```text
-1. Fetches all blocks from the last short session and extracts every address with a transaction,
-   writing them to `allAddresses.txt`
-
-2. Saves the current `discriminationStakeThreshold` to `stake_threshold.txt` for reference
-
-3. Filters all addresses in `allAddresses.txt`:
-    - Removes "shitflipper" identities
-    - Excludes Human identities with stake below the minimum threshold
-    - Excludes Newbie/Verified identities with less than 10,000 IDNA staked
-
-4. Outputs a filtered `idena_strict_whitelist.jsonl`  
-   (for this epoch, expect about 249 eligible addresses)
-
-    Note: This script is a temporary proof-of-concept (“blueprint”) and will be deleted after evaluation.
 
 ## Installation
 
