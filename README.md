@@ -22,7 +22,7 @@ The goal is to automate and document the filtering process for on-chain group ac
 
     Note: This script is a temporary proof-of-concept (“blueprint”) and will be deleted after evaluation.
 
-Installation
+## Installation
 
 These instructions are for users new to Python and just want to run build_idena_identities_strict.py locally.
 
@@ -32,27 +32,27 @@ These instructions are for users new to Python and just want to run build_idena_
 2. **Install the required Python package.**
    Open a terminal (or command prompt) and run:
 
-   ```bash
+    ```sh
    pip install requests
    ```
 
    This installs the only third‑party dependency used by the script.
 3. **Download this repository.**
 
-   ```bash
+    ```sh
    git clone https://github.com/ubiubi18/whitelist_blueprint.git
    cd whitelist_blueprint
    ```
 
 4. **Run the script.**
 
-   ```bash
+    ```sh
    python build_idena_identities_strict.py
    ```
 
    The script will fetch data from the Idena API and produce a file called
-   `idena_whitelist.jsonl` containing the filtered identities. Auxiliary files
-   such as `allAddresses.txt` and `discriminationStakeThreshold.txt` will be
+   `idena_strict_whitelist.jsonl` containing the filtered identities. Auxiliary files
+   such as `allAddresses.txt` and `stake_threshold.txt` will be
    created in the same folder.
 
 
@@ -63,5 +63,4 @@ This project is a small demo and comes with no promises. Use it at your own risk
 ## License
 
 This repository is distributed under the MIT License. See [LICENSE](./LICENSE) for the full text.
-=======
 
