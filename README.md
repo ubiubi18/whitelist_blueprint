@@ -56,6 +56,7 @@ These instructions assume you are new to Python and simply want to run the
    such as `allAddresses.txt` and `discriminationStakeThreshold.txt` will be
    created in the same folder.
 
+
 ## Legal
 
 This project is a small demo and comes with no promises. Use it at your own risk and double-check results before relying on them.
@@ -63,3 +64,5 @@ This project is a small demo and comes with no promises. Use it at your own risk
 ## License
 
 This repository is distributed under the MIT License. See [LICENSE](./LICENSE) for the full text.
+=======
+
