@@ -3,9 +3,9 @@ import json
 import time
 
 # --- CONFIG ---
-ADDRESS_FILE = "alleAddis2.txt"
+ADDRESS_FILE = "allAddresses.txt"
 OUT_FILE = "idena_whitelist.jsonl"
-STAKE_THRESHOLD_FILE = "stake_threshold.txt"
+STAKE_THRESHOLD_FILE = "discriminationStakeThreshold.txt"
 NEWBIE_MIN_STAKE = 10000
 VERIFIED_MIN_STAKE = 10000
 REQUIRED_BLOCKS_WITH_TXS = 7
