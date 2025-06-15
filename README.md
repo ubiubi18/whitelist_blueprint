@@ -1,31 +1,30 @@
 # whitelist_blueprint
 
-Purpose:
-This little python script is meant as a prototype for reproducibly generating an Idena identity whitelist at the end of each validation epoch. The motivation is to automate and document the filtering process for on-chain group access, reward distribution, or similar use cases—ensuring full transparency and reproducibility.
+**Purpose:**  \
+This Python script is a prototype for reproducibly generating an Idena identity whitelist at the end of each validation epoch.  \
+The goal is to automate and document the filtering process for on-chain group access, reward distribution, and similar use cases—ensuring full transparency and reproducibility.
 
-What it does:
+## What does it do?
 
-    Fetches all blocks from the last short session and extracts every address with a transaction, writing them to allAddresses.txt
+```text
+1. Fetches all blocks from the last short session and extracts every address with a transaction,
+   writing them to `allAddresses.txt`
 
-    Saves the current discriminationStakeThreshold to stake_threshold.txt for reference
+2. Saves the current `discriminationStakeThreshold` to `stake_threshold.txt` for reference
 
-    Filters all addresses in allAddresses.txt:
+3. Filters all addresses in `allAddresses.txt`:
+    - Removes "shitflipper" identities
+    - Excludes Human identities with stake below the minimum threshold
+    - Excludes Newbie/Verified identities with less than 10,000 IDNA staked
 
-        Removes “shitflipper” identities
+4. Outputs a filtered `idena_strict_whitelist.jsonl`  
+   (for this epoch, expect about 249 eligible addresses)
 
-        Excludes Human identities with stake below the minimum threshold
+    Note: This script is a temporary proof-of-concept (“blueprint”) and will be deleted after evaluation.
 
-        Excludes Newbie/Verified identities with less than 10,000 IDNA staked
+Installation
 
-    Outputs a filtered idena_strict_whitelist.jsonl (currently, this epoch, there should be 249 eligible addresses)
-
-Note:
-This script is just a temporary proof of concept (“blueprint”) and will be deleted after evaluation.
-
-## Installation
-
-These instructions assume you are new to Python and simply want to run the
-`build_idena_identities_strict.py` script locally.
+These instructions are for users new to Python and just want to run build_idena_identities_strict.py locally.
 
 1. **Install Python 3.8 or newer.**
    - Windows/macOS users can download it from <https://www.python.org/downloads/>.
