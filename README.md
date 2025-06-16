@@ -8,7 +8,7 @@ The goal is to automate and document the filtering process for on-chain group ac
  - Fetches all blocks from the last short session to extract all involved identities with tx in shortsession to allAddresses.txt
  - Saves the current discriminationStakeThreshold.txt
  - Filters out against allAdresses.txt and discriminationStakeThreshold.txt: shitflippers, Humans below min stake, and Newbies/Verifieds below 10k IDNA
- - Outputs an `idena_whitelist.jsonl` file (around 249 addresses in epoch 164, for example)
+ - Outputs an `idena_whitelist.jsonl` file (with different subset each epoch, for example 249 addresses in epoch 164)
 
 ## Installation
 
