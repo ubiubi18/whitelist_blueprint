@@ -30,7 +30,11 @@ def get_block_flags(block_height):
     if resp.status_code != 200:
         return []
     data = resp.json().get("result", {})
-    return data.get("flags", [])
+    # Sometimes the API returns "flags": null or omits the field entirely for
+    # very old blocks. Treat missing/None as an empty list so callers don't
+    # crash when checking membership.
+    flags = data.get("flags") or []
+    return flags
 
 def fetch_all_txs(block_height, limit=100):
     url = f"https://api.idena.io/api/Block/{block_height}/Txs"
@@ -60,7 +64,9 @@ def fetch_all_txs(block_height, limit=100):
 
 def find_short_session_block(start_height):
     for h in range(start_height, start_height + 20):
-        flags = get_block_flags(h)
+        flags = get_block_flags(h) or []
+        if not flags:
+            print(f"[WARN] No flags found in block {h} (may be an old block or API inconsistency)")
         if "ShortSessionStarted" in flags:
             print(f"ShortSessionStarted found at block {h}")
             return h
