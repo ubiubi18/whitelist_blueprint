@@ -9,6 +9,8 @@ STAKE_THRESHOLD_FILE = "discriminationStakeThreshold.txt"
 NEWBIE_MIN_STAKE = 10000
 VERIFIED_MIN_STAKE = 10000
 REQUIRED_BLOCKS_WITH_TXS = 7
+# Number of epochs to look back for eligibility statistics
+EPOCHS_TO_LOOK_BACK = 5
 
 def get_latest_epoch_info():
     url = "https://api.idena.io/api/Epoch/Last"
@@ -85,16 +87,11 @@ def fetch_bad_addresses(epoch, limit=100):
     print(f"Loaded {len(bad_addrs)} bad addresses")
     return bad_addrs
 
-def collect_shortsession_addresses(required_blocks_with_txs=REQUIRED_BLOCKS_WITH_TXS):
-    print("Fetching latest epoch info...")
-    latest_epoch, current_threshold = get_latest_epoch_info()
-    print(f"Latest epoch: {latest_epoch}, discriminationStakeThreshold: {current_threshold}")
-    with open(STAKE_THRESHOLD_FILE, "w") as f:
-        f.write(str(current_threshold))
-
-    last_epoch = latest_epoch - 1
-    first_block_base, last_epoch_data = get_epoch_info(last_epoch)
-    print(f"Last epoch: {last_epoch}, validationFirstBlockHeight: {first_block_base}")
+def collect_shortsession_addresses(epoch, required_blocks_with_txs=REQUIRED_BLOCKS_WITH_TXS, write_file=True):
+    """Collect unique sender addresses from the short session of ``epoch``."""
+    print(f"Fetching info for epoch {epoch}...")
+    first_block_base, _ = get_epoch_info(epoch)
+    print(f"Epoch {epoch}, validationFirstBlockHeight: {first_block_base}")
 
     candidate_block = first_block_base + 15
     short_session_block = find_short_session_block(candidate_block)
@@ -119,41 +116,52 @@ def collect_shortsession_addresses(required_blocks_with_txs=REQUIRED_BLOCKS_WITH
             print(f"Block {current_block} - empty, skipped")
         current_block += 1
 
-    with open(ADDRESS_FILE, "w") as f:
-        f.write(",".join(sorted(unique_addresses)))
+    addresses_sorted = sorted(unique_addresses)
+    if write_file:
+        with open(ADDRESS_FILE, "w") as f:
+            f.write(",".join(addresses_sorted))
+        print(f"\nDone! {len(unique_addresses)} unique addresses written to {ADDRESS_FILE}")
+    else:
+        print(f"\nDone! {len(unique_addresses)} unique addresses collected for epoch {epoch}")
 
-    print(f"\nDone! {len(unique_addresses)} unique addresses written to {ADDRESS_FILE}")
-    print(f"DiscriminationStakeThreshold ({current_threshold}) written to {STAKE_THRESHOLD_FILE}")
+    return addresses_sorted
 
-def main():
-    # Step 1: Collect addresses from short session blocks
-    collect_shortsession_addresses(REQUIRED_BLOCKS_WITH_TXS)
+def process_epoch(epoch, write_files=False):
+    """Process a single epoch and return the number of eligible identities."""
 
-    # Step 2: Determine previous epoch and get discrimination threshold & bad flips
-    epoch_resp = requests.get("https://api.idena.io/api/Epoch/Last", timeout=10)
-    last_epoch = int(epoch_resp.json()["result"]["epoch"]) - 1
-    _, discrimination_stake_threshold = get_latest_epoch_info()
-    bad_addresses = fetch_bad_addresses(last_epoch)
+    # Step 1: collect addresses from the epoch's short session
+    addresses = collect_shortsession_addresses(epoch, REQUIRED_BLOCKS_WITH_TXS, write_file=write_files)
 
-    # Step 3: Load addresses from file (dynamic length)
-    with open(ADDRESS_FILE) as f:
-        addresses = [a.strip() for a in f.read().split(",") if a.strip()]
+    # Step 2: get discrimination stake threshold from the next epoch
+    try:
+        _, next_epoch_data = get_epoch_info(epoch + 1)
+        discrimination_stake_threshold = float(next_epoch_data.get("discriminationStakeThreshold", 0))
+    except Exception:
+        discrimination_stake_threshold = 0
+
+    if write_files:
+        with open(STAKE_THRESHOLD_FILE, "w") as f:
+            f.write(str(discrimination_stake_threshold))
+
+    bad_addresses = fetch_bad_addresses(epoch)
+
     max_addresses = len(addresses)
-    print(f"Processing {max_addresses} addresses from {ADDRESS_FILE}")
+    if write_files:
+        out = open(OUT_FILE, "w", encoding="utf-8")
+    else:
+        out = None
 
-    out = open(OUT_FILE, "w", encoding="utf-8")
     errors = []
     whitelisted = 0
 
-    print(f"Checking final states using /Epoch/{last_epoch}/Identity/{{addr}}/ValidationSummary ...")
+    print(f"Checking final states using /Epoch/{epoch}/Identity/{{addr}}/ValidationSummary ...")
     for i, addr in enumerate(addresses):
         addr_l = addr.lower()
         reason = None
-        # Exclude bad flip addresses first
         if addr_l in bad_addresses:
             reason = "EXCLUDED (address is in Bad Authors list / reported for bad flips)"
         try:
-            url = f"https://api.idena.io/api/Epoch/{last_epoch}/Identity/{addr}/ValidationSummary"
+            url = f"https://api.idena.io/api/Epoch/{epoch}/Identity/{addr}/ValidationSummary"
             r = requests.get(url, timeout=15)
             if r.status_code != 200:
                 raise Exception(f"API returned {r.status_code}")
@@ -181,12 +189,8 @@ def main():
             if reason:
                 print(f"[{i+1}/{max_addresses}] {reason}: {addr} - state={state}, stake={stake}")
                 continue
-            # Passed all checks
-            out.write(json.dumps({
-                "address": addr,
-                "state": state,
-                "stake": stake
-            }) + "\n")
+            if out:
+                out.write(json.dumps({"address": addr, "state": state, "stake": stake}) + "\n")
             whitelisted += 1
             print(f"[{i+1}/{max_addresses}] OK: {addr} - state={state}, stake={stake}")
         except Exception as e:
@@ -194,12 +198,42 @@ def main():
             print(f"[{i+1}/{max_addresses}] ERROR: {addr} - {e}")
         time.sleep(0.2)
 
-    out.close()
+    if out:
+        out.close()
     print(f"Done. Whitelisted: {whitelisted} addresses. Errors: {len(errors)}")
     if errors:
         print("Errors:")
         for addr, msg in errors:
             print(f"  {addr}: {msg}")
+
+    return whitelisted
+
+def main():
+    """Process the last epoch as before and compute historic eligibility counts."""
+
+    latest_epoch, _ = get_latest_epoch_info()
+
+    results = []
+    for offset in range(EPOCHS_TO_LOOK_BACK):
+        epoch = latest_epoch - 1 - offset
+        if epoch < 0:
+            break
+        print(f"\n=== Epoch {epoch} ===")
+        count = process_epoch(epoch, write_files=(offset == 0))
+        results.append((epoch, count))
+
+    print("\nEpoch   EligibleCount")
+    for ep, cnt in results:
+        print(f"{ep:<7}{cnt}")
+
+    try:
+        with open("eligible_identities_per_epoch.csv", "w") as csvf:
+            csvf.write("Epoch,EligibleCount\n")
+            for ep, cnt in results:
+                csvf.write(f"{ep},{cnt}\n")
+        print("eligible_identities_per_epoch.csv written")
+    except Exception as e:
+        print(f"Failed to write CSV: {e}")
 
 if __name__ == "__main__":
     main()
