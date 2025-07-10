@@ -9,7 +9,7 @@ This Python project generates transparent, reproducible Idena identity whitelist
 * **Filters for:**
 
   * Correct identity state (Human, Verified, Newbie)
-  * Enough stake at session start
+  * Enough stake (above DiscriminationStakeThreshold) at session start
   * No known “bad flip” penalties
 * **Outputs:**
 
