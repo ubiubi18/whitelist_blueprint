@@ -88,8 +88,7 @@ Creates:
 
 ```bash
 python IdenaWhitelistHistoricGen.py
-# or
-python build_idena_identities_history.py
+
 ```
 
 This will:
