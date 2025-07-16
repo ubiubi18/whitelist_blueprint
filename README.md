@@ -57,16 +57,8 @@ source venv/bin/activate
 
 ```bash
 pip install requests eth-utils
+python -m pip install "eth-hash[pycryptodome]"
 ```
-
-If you use the Merkle tools or advanced scripts, install more as needed:
-
-```bash
-pip install eth-utils
-```
-
-No extra `requirements.txt` is needed for core scripts.
-
 ---
 
 ## Usage
