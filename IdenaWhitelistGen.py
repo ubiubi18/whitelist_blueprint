@@ -299,7 +299,7 @@ def main():
                     )
             if reason:
                 print(
-                    f"[{i+1}/{max_addresses}] {addr} - NOT eligible: {reason} | "
+                    f"[{i+1}/{max_addresses}] {addr} - NOT ELIGIBLE: {reason} | "
                     f"shortPts={short_points} longPts={long_points} | byType={by_type}"
                 )
                 continue
