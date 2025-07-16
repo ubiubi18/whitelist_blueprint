@@ -258,7 +258,7 @@ def main():
                 else:
                     reason = "No info found for address"
                 print(
-                    f"[{i+1}/{max_addresses}] {addr} - NOT eligible: {reason} | byType={by_type}"
+                    f"[{i+1}/{max_addresses}] {addr} - NOT ELIGIBLE: {reason} | byType={by_type}"
                 )
                 continue
             r.raise_for_status()
@@ -321,9 +321,7 @@ def main():
             whitelisted += 1
             whitelist_addresses.append(addr)
             print(
-                f"[{i+1}/{max_addresses}] {addr} - ELIGIBLE | "
-                f"epochStartStake={epoch_start_stake:.4f} >= DiscriminationStakeThreshold={discrimination_stake_threshold:.4f} | "
-                f"shortPts={short_points} longPts={long_points} | byType={by_type}"
+                f"[{i+1}/{max_addresses}] {addr} - OK | "
             )
         except Exception as e:
             errors.append((addr, str(e)))
