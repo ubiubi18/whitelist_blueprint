@@ -71,7 +71,7 @@ python IdenaWhitelistGen.py
 
 Creates:
 
-* `allAddresses.txt` – all session addresses
+* `allAddresses.txt` – all addresses with tx in short session (, including bad actors and failed/killed IDs)
 * `idena_whitelist.jsonl` – eligible addresses, full info
 * `whitelist.txt` – plain eligible addresses (CSV)
 * `whitelist_meta.json` – epoch meta, stake threshold, Merkle root
