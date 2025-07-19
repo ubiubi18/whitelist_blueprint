@@ -170,7 +170,8 @@ def main():
                 idr = requests.get(f"https://api.idena.io/api/Identity/{al}", timeout=10)
                 if idr.status_code == 200:
                     state = (idr.json().get("result") or {}).get("state")
-                    reason = f"Not paid / Candidate failed (state={state})" if state else "Not paid / Candidate failed"
+                    reason = "Killed by protocol" if state and state.lower() == "undefined" else \
+                        f"Not paid / Candidate failed (state={state})" if state else "Not paid / Candidate failed"
                 else:
                     reason = "No info"
                 log_status(i, total, addr, "EXCLUDED. Reason:", reason)
@@ -190,6 +191,9 @@ def main():
             rew_sum = sum_session_reward_stake(target_epoch, al)
             epoch_stake = base_stake + rew_sum
 
+            if state and state.lower() == "undefined":
+                reason = "Killed by protocol"
+
             if reason is None:
                 if penalized:
                     reason = "Penalized"
@@ -202,7 +206,7 @@ def main():
                 elif state in ("Candidate", "Suspended"):
                     reason = state
                 elif state not in ("Human", "Newbie", "Verified"):
-                    reason = f"State {state}"
+                    reason = "Killed by protocol" if state and state.lower() == "undefined" else f"State {state}"
                 elif epoch_stake < stake_threshold:
                     reason = f"Stake below threshold (epochStartStake={epoch_stake:.4f} < {stake_threshold:.4f})"
 
@@ -247,4 +251,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
