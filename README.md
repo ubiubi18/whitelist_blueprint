@@ -75,6 +75,7 @@ Creates:
 * `idena_whitelist.jsonl` – eligible addresses, full info
 * `whitelist.txt` – plain eligible addresses (CSV)
 * `whitelist_meta.json` – epoch meta, stake threshold, Merkle root
+* `merkle_root_epoch_xxx.txt` (while "xxx"=latest epoch)
 
 ### Generate historic whitelists and stats
 
@@ -91,9 +92,9 @@ This will:
 
 **File outputs (historic mode):**
 
-* `idena_whitelist_epoch164.jsonl`
-* `whitelist_meta_epoch164.json`
-* `merkle_root_epoch_164.txt`
+* `idena_whitelist_epoch166.jsonl`
+* `whitelist_meta_epoch166.json`
+* `merkle_root_epoch_166.txt`
 * ...and so on for each epoch
 
 ### Customization
@@ -103,12 +104,11 @@ This will:
 * **Eligibility logic:**
   All rules are documented in code. Adjust states, penalty, and stake checks as needed.
 
-### Example Console Session
+### Example Console Session in Epoch xxx
 
 ```bash
 python IdenaWhitelistGen.py
-python IdenaWhitelistHistoricGen.py
-cat eligible_identities_per_epoch.csv
+cat merkle_root_epoch_xxx.txt
 ```
 
 ---
