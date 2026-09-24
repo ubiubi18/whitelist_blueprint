@@ -1,3 +1,8 @@
+
+## Research disclaimer
+
+This is experimental research software. I cannot guarantee its security, correctness, or fitness for any purpose. Use it at your own risk, take responsibility for your decisions, independently verify changes, and stay vigilant.
+
 ## Purpose
 
 This Python project generates transparent, reproducible Idena identity whitelists for on-chain group access, reward distribution, or similar trust-based use cases. You can use it to snapshot the eligible participant set at any validation epoch—fully automated, with all eligibility and filtering logic documented in code.
